@@ -1,55 +1,10 @@
 package com.dentax.client.module.modules.combat;
 
 import com.dentax.client.module.Module;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
 
-public class MaceAura extends Module {
-
-    private float range = 5.0f;
-    private int cooldown = 0;
-
-    public MaceAura() {
-        super("MaceAura", "Mace ile düşerken otomatik ezme saldırısı (smash attack)", Category.COMBAT);
+public class AntiKnockback extends Module {
+    public AntiKnockback() {
+        super("AntiKnockback", "Reduces knockback taken from hits", Category.COMBAT);
     }
-
-    @Override
-    public void onTick() {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        if (mc.player == null || mc.world == null || mc.interactionManager == null) return;
-
-        // Elde Mace var mı kontrol et
-        boolean hasMace = mc.player.getMainHandStack().isOf(Items.MACE)
-                || mc.player.getOffHandStack().isOf(Items.MACE);
-        if (!hasMace) return;
-
-        if (cooldown > 0) { cooldown--; return; }
-
-        // Mace smash attack: düşerken (negatif Y velocity) yapılınca güçlü
-        boolean isFalling = mc.player.getVelocity().y < -0.1;
-
-        for (LivingEntity entity : mc.world.getEntitiesByClass(LivingEntity.class,
-                mc.player.getBoundingBox().expand(range), e -> {
-                    if (e == mc.player) return false;
-                    if (!(e instanceof PlayerEntity)) return false;
-                    return e.isAlive();
-                })) {
-
-            if (isFalling) {
-                // Smash attack: daha fazla hasar
-                mc.player.swingHand(Hand.MAIN_HAND);
-                mc.interactionManager.attackEntity(mc.player, entity);
-                cooldown = 8;
-            } else {
-                // Normal saldırı
-                mc.player.swingHand(Hand.MAIN_HAND);
-                mc.interactionManager.attackEntity(mc.player, entity);
-                cooldown = 12;
-            }
-            break;
-        }
-    }
+    // Knockback reduction handled via mixin in GameRendererMixin
 }
