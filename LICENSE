@@ -1,0 +1,10 @@
+package com.dentax.client.module.modules.combat;
+
+import com.dentax.client.module.Module;
+
+public class AntiKnockback extends Module {
+    public AntiKnockback() {
+        super("AntiKnockback", "Reduces knockback taken from hits", Category.COMBAT);
+    }
+    // Knockback reduction handled via mixin in GameRendererMixin
+}
